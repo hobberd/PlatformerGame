@@ -50,7 +50,7 @@ class Platformer extends Phaser.Scene {
 
     update() {
         if(cursors.left.isDown) {
-            // TODO: have the player accelerate to the left
+            // TODO: have the player accelerate to the left.
             my.sprite.player.body.setAccelerationX(-this.ACCELERATION);
             my.sprite.player.resetFlip();
             my.sprite.player.anims.play('walk', true);
