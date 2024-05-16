@@ -7,11 +7,12 @@ class Load extends Phaser.Scene {
         this.load.setPath("./assets/");
 
         // Load characters spritesheet
-        this.load.atlas("platformer_characters", "tilemap-characters-packed.png", "tilemap-characters-packed.json");
+        this.load.atlas("platformer_characters", "characters.png", "characters.json");
 
         // Load tilemap information
-        this.load.image("tilemap_tiles", "tilemap_packed.png");                         // Packed tilemap
-        this.load.tilemapTiledJSON("platformer-level-1", "platformer-level-1.tmj");   // Tilemap in JSON
+        this.load.image("tiles", "monochrome_tilemap_transparent_packed.png");
+        this.load.image("tiles_black", "monochrome_tilemap_packed.png");
+        this.load.tilemapTiledJSON("level1", "umbra1.tmx");   // Tilemap in JSON
     }
 
     create() {
@@ -19,8 +20,8 @@ class Load extends Phaser.Scene {
             key: 'walk',
             frames: this.anims.generateFrameNames('platformer_characters', {
                 prefix: "tile_",
-                start: 0,
-                end: 1,
+                start: 282,
+                end: 283,
                 suffix: ".png",
                 zeroPad: 4
             }),
@@ -32,7 +33,7 @@ class Load extends Phaser.Scene {
             key: 'idle',
             defaultTextureKey: "platformer_characters",
             frames: [
-                { frame: "tile_0000.png" }
+                { frame: "tile_0281.png" }
             ],
             repeat: -1
         });
@@ -41,7 +42,7 @@ class Load extends Phaser.Scene {
             key: 'jump',
             defaultTextureKey: "platformer_characters",
             frames: [
-                { frame: "tile_0001.png" }
+                { frame: "tile_0284.png" }
             ],
         });
 
