@@ -12,7 +12,7 @@ class Load extends Phaser.Scene {
         // Load tilemap information
         this.load.image("tiles", "monochrome_tilemap_transparent_packed.png");
         this.load.image("tiles_black", "monochrome_tilemap_packed.png");
-        this.load.tilemapTiledJSON("level1", "umbra1.tmx");   // Tilemap in JSON
+        this.load.tilemapTiledJSON("level1", "umbra.tmx");   // Tilemap in JSON
     }
 
     create() {
