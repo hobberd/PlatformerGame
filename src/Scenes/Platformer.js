@@ -8,10 +8,15 @@ class Platformer extends Phaser.Scene {
         this.ACCELERATION = 1500;
         this.DRAG = 2500;    // DRAG < ACCELERATION = icy slide
         this.physics.world.gravity.y = 2500;
-        this.JUMP_VELOCITY = -900;
-        this.MAX_SPEED = 600;
+        this.JUMP_VELOCITY = -925;
+        this.MAX_SPEED = 400;
         this.goingLeft = false;
         this.grappleCooldown = false;
+        this.inRange = false;
+        this.offsetX = 16.5;
+        this.offsetY = 23;
+        this.grappleLocations1 = [512+this.offsetX,128+this.offsetY, 1280+this.offsetX,352+this.offsetY];
+        this.level = 1;
     }
 
     create() {
@@ -62,6 +67,11 @@ class Platformer extends Phaser.Scene {
             this.physics.world.debugGraphic.clear()
         }, this);
 
+        // Grapple 
+        this.line = this.add.line(0, 0, my.sprite.player.x, my.sprite.player.y, my.sprite.player.x, my.sprite.player.y, 0xff0000, 1);
+        this.line.setLineWidth(4);
+        this.line.visible = false;
+
     }
 
     update() {
@@ -72,7 +82,7 @@ class Platformer extends Phaser.Scene {
                 my.sprite.player.body.setVelocityX(0);
                 this.goingLeft = true;
             }
-            console.log(my.sprite.player.body.velocity.x);
+            //console.log(my.sprite.player.body.velocity.x);
             if(my.sprite.player.body.velocity.x > -this.MAX_SPEED)
             {
                 my.sprite.player.body.setAccelerationX(-this.ACCELERATION);
@@ -92,7 +102,7 @@ class Platformer extends Phaser.Scene {
                 my.sprite.player.body.setVelocityX(0);
                 this.goingLeft = false;
             }
-            console.log(my.sprite.player.body.velocity.x);
+            //console.log(my.sprite.player.body.velocity.x);
             if(my.sprite.player.body.velocity.x < this.MAX_SPEED)
             {
                 my.sprite.player.body.setAccelerationX(this.ACCELERATION);
@@ -129,23 +139,68 @@ class Platformer extends Phaser.Scene {
 
         }
 
-        if(!my.sprite.player.body.blocked.down && Phaser.Input.Keyboard.JustDown(this.space) && !this.grappleCooldown) 
-        {
-            // TODO: set a Y velocity to have the player "jump" upwards (negative Y direction)
-            if(this.a.isDown || cursors.left.isDown)
-            {
-                my.sprite.player.body.setVelocityX(my.sprite.player.body.velocity.x + this.JUMP_VELOCITY);
-            }
-            if(this.d.isDown || cursors.right.isDown)
-            {
-                my.sprite.player.body.setVelocityX(my.sprite.player.body.velocity.x - this.JUMP_VELOCITY);
-            }
-            this.grappleCooldown = true;
+        // Grapple
+        let closestCoords = [0, 0];
         
+        if(this.level == 1)
+        {
+            var closest = 1000000000;
+            for(let i = 0; i < this.grappleLocations1.length; i+=2)
+            {
+                var dx = my.sprite.player.x - this.grappleLocations1[i];
+                var dy = my.sprite.player.y - this.grappleLocations1[i+1];
+                var dist = Math.sqrt(dx*dx + dy*dy);
+                //console.log(closest);
+                if(dist < closest)
+                {
+                    closest = dist;
+                    closestCoords[0] = this.grappleLocations1[i];
+                    closestCoords[1] = this.grappleLocations1[i+1];
+                }
+            }
+            this.line.setTo(my.sprite.player.x, my.sprite.player.y, closestCoords[0], closestCoords[1]);
+            
+        }
+        
+        if(this.space.isDown && !this.grappleCooldown) 
+        {
+            this.line.visible = true;  
+            var dx = my.sprite.player.x - closestCoords[0];
+            var dy = my.sprite.player.y - closestCoords[1];
+            var dist = Math.sqrt(dx*dx + dy*dy); 
+            console.log(dist);
+            if(dist < 400)
+            {
+                this.line.strokeColor = 0xffffff;
+                this.inRange = true;
+            }
+            else
+            {
+                this.line.strokeColor = 0xff0000;
+                this.inRange = false;
+            }
+            
+        
+        }
+        else
+        {
+            this.line.visible = false;
+        }
+        if(Phaser.Input.Keyboard.JustUp(this.space) && this.inRange && !this.grappleCooldown)
+        {
+            this.line.visible = false;
+            var grappleSpeed = -1200;
+            var dx = my.sprite.player.x - closestCoords[0];
+            var dy = my.sprite.player.y - closestCoords[1];
+            var theta = Math.atan2(dy, dx);
+            my.sprite.player.body.setVelocityX(grappleSpeed*Math.cos(theta));
+            my.sprite.player.body.setVelocityY(grappleSpeed*Math.sin(theta));
+            this.grappleCooldown = true;
         }
         if(my.sprite.player.body.blocked.down)
         {
             this.grappleCooldown = false;
         }
+        
     }
 }
