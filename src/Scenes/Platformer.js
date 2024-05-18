@@ -17,6 +17,11 @@ class Platformer extends Phaser.Scene {
         this.offsetY = 23;
         this.grappleLocations1 = [512+this.offsetX,128+this.offsetY, 1280+this.offsetX,352+this.offsetY];
         this.level = 1;
+        this.grappleSpeed = 1400;
+        this.vx = 0;
+        this.vy = 0;
+        this.flying = false;
+        this.grappleRange = 400;
     }
 
     create() {
@@ -75,15 +80,89 @@ class Platformer extends Phaser.Scene {
     }
 
     update() {
-        if(this.a.isDown || cursors.left.isDown) {
-            // TODO: have the player accelerate to the left.
-            if(!this.goingLeft && my.sprite.player.body.blocked.down)
+
+        // Grapple
+        let closestCoords = [0, 0];
+        
+        if(this.level == 1)
+        {
+            var closest = 1000000000;
+            for(let i = 0; i < this.grappleLocations1.length; i+=2) // find grapple locations
             {
-                my.sprite.player.body.setVelocityX(0);
+                var dx = my.sprite.player.x - this.grappleLocations1[i];
+                var dy = my.sprite.player.y - this.grappleLocations1[i+1];
+                var dist = Math.sqrt(dx*dx + dy*dy);
+                //console.log(closest);
+                if(dist < closest)
+                {
+                    closest = dist;
+                    closestCoords[0] = this.grappleLocations1[i];
+                    closestCoords[1] = this.grappleLocations1[i+1];
+                }
+            }
+            this.line.setTo(my.sprite.player.x, my.sprite.player.y, closestCoords[0], closestCoords[1]); // create line 
+            
+        }
+        
+        if(this.space.isDown && !this.grappleCooldown) // if space is pressed, show line
+        {
+            this.line.visible = true;  
+            var dx = my.sprite.player.x - closestCoords[0];
+            var dy = my.sprite.player.y - closestCoords[1];
+            var dist = Math.sqrt(dx*dx + dy*dy); 
+            console.log(dist);
+            if(dist < this.grappleRange)
+            {
+                this.line.strokeColor = 0xffffff;
+                this.inRange = true;
+            }
+            else
+            {
+                this.line.strokeColor = 0xff0000;
+                this.inRange = false;
+            }
+            
+        
+        }
+        else
+        {
+            this.line.visible = false;
+        }
+        
+        if(Phaser.Input.Keyboard.JustUp(this.space) && this.inRange && !this.grappleCooldown) // when space is let go, launch player
+        {
+            this.line.visible = false;
+            var dx = my.sprite.player.x - closestCoords[0];
+            var dy = my.sprite.player.y - closestCoords[1];
+            var theta = Math.atan2(dy, dx);
+            this.vx = -this.grappleSpeed*Math.cos(theta);
+            this.vy = -this.grappleSpeed*Math.sin(theta);
+            my.sprite.player.body.setVelocityX(this.vx);
+            my.sprite.player.body.setVelocityY(this.vy);
+            this.grappleCooldown = true;
+            this.flying = true;
+        }
+        if(my.sprite.player.body.blocked.down)
+        {
+            this.grappleCooldown = false;
+        }
+        // Movement 
+        if(this.a.isDown || cursors.left.isDown) 
+        {
+            // the player accelerates to the left.
+            if(!this.goingLeft && (my.sprite.player.body.blocked.down || this.flying))
+            {
+                if(my.sprite.player.body.blocked.down)
+                    my.sprite.player.body.setVelocityX(0);
                 this.goingLeft = true;
+                this.flying = false;
             }
             //console.log(my.sprite.player.body.velocity.x);
-            if(my.sprite.player.body.velocity.x > -this.MAX_SPEED)
+            if(this.grappleCooldown && this.flying)
+            {
+                my.sprite.player.body.setVelocityX(this.vx);
+            }
+            else if(my.sprite.player.body.velocity.x > -this.MAX_SPEED)
             {
                 my.sprite.player.body.setAccelerationX(-this.ACCELERATION);
             }
@@ -97,13 +176,19 @@ class Platformer extends Phaser.Scene {
 
         } else if(this.d.isDown || cursors.right.isDown) {
             // TODO: have the player accelerate to the right
-            if(this.goingLeft && my.sprite.player.body.blocked.down)
+            if(this.goingLeft && (my.sprite.player.body.blocked.down || this.flying))
             {
-                my.sprite.player.body.setVelocityX(0);
+                if(my.sprite.player.body.blocked.down)
+                    my.sprite.player.body.setVelocityX(0);
                 this.goingLeft = false;
+                this.flying = false;
             }
             //console.log(my.sprite.player.body.velocity.x);
-            if(my.sprite.player.body.velocity.x < this.MAX_SPEED)
+            if(this.grappleCooldown && this.flying)
+            {
+                my.sprite.player.body.setVelocityX(this.vx);
+            }
+            else if(my.sprite.player.body.velocity.x < this.MAX_SPEED)
             {
                 my.sprite.player.body.setAccelerationX(this.ACCELERATION);
             }
@@ -120,6 +205,7 @@ class Platformer extends Phaser.Scene {
             if(!my.sprite.player.body.blocked.down)
             {
                 my.sprite.player.body.setDragX(this.DRAG);
+                this.flying = false;
             }
             else
             {
@@ -139,68 +225,7 @@ class Platformer extends Phaser.Scene {
 
         }
 
-        // Grapple
-        let closestCoords = [0, 0];
         
-        if(this.level == 1)
-        {
-            var closest = 1000000000;
-            for(let i = 0; i < this.grappleLocations1.length; i+=2)
-            {
-                var dx = my.sprite.player.x - this.grappleLocations1[i];
-                var dy = my.sprite.player.y - this.grappleLocations1[i+1];
-                var dist = Math.sqrt(dx*dx + dy*dy);
-                //console.log(closest);
-                if(dist < closest)
-                {
-                    closest = dist;
-                    closestCoords[0] = this.grappleLocations1[i];
-                    closestCoords[1] = this.grappleLocations1[i+1];
-                }
-            }
-            this.line.setTo(my.sprite.player.x, my.sprite.player.y, closestCoords[0], closestCoords[1]);
-            
-        }
-        
-        if(this.space.isDown && !this.grappleCooldown) 
-        {
-            this.line.visible = true;  
-            var dx = my.sprite.player.x - closestCoords[0];
-            var dy = my.sprite.player.y - closestCoords[1];
-            var dist = Math.sqrt(dx*dx + dy*dy); 
-            console.log(dist);
-            if(dist < 400)
-            {
-                this.line.strokeColor = 0xffffff;
-                this.inRange = true;
-            }
-            else
-            {
-                this.line.strokeColor = 0xff0000;
-                this.inRange = false;
-            }
-            
-        
-        }
-        else
-        {
-            this.line.visible = false;
-        }
-        if(Phaser.Input.Keyboard.JustUp(this.space) && this.inRange && !this.grappleCooldown)
-        {
-            this.line.visible = false;
-            var grappleSpeed = -1300;
-            var dx = my.sprite.player.x - closestCoords[0];
-            var dy = my.sprite.player.y - closestCoords[1];
-            var theta = Math.atan2(dy, dx);
-            my.sprite.player.body.setVelocityX(grappleSpeed*Math.cos(theta));
-            my.sprite.player.body.setVelocityY(grappleSpeed*Math.sin(theta));
-            this.grappleCooldown = true;
-        }
-        if(my.sprite.player.body.blocked.down)
-        {
-            this.grappleCooldown = false;
-        }
         
     }
 }
