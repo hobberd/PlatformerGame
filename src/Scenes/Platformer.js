@@ -189,7 +189,7 @@ class Platformer extends Phaser.Scene {
         if(Phaser.Input.Keyboard.JustUp(this.space) && this.inRange && !this.grappleCooldown)
         {
             this.line.visible = false;
-            var grappleSpeed = -1200;
+            var grappleSpeed = -1300;
             var dx = my.sprite.player.x - closestCoords[0];
             var dy = my.sprite.player.y - closestCoords[1];
             var theta = Math.atan2(dy, dx);
