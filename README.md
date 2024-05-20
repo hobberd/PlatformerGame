@@ -1,5 +1,5 @@
-**Starter Platformer**
+**UMBRA**
 
-A Phaser 3 code framework for creating a bare-bones 2D platformer game.
+A Platformer made using Phaser 3.
 
-Visual assets provided by Kenny Assets [Pixel Platformer](https://kenney.nl/assets/pixel-platformer) asset pack, with gratitude. 
+Visual assets provided by Kenny Assets asset packs.
