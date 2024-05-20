@@ -34,10 +34,12 @@ class Platformer extends Phaser.Scene {
         this.gameEnd = false;
         this.worldX = 5280;
         this.worldY = 960;
-        this.checkpointX = 40;
+        this.checkpointX = 70;
         this.checkpointY = 816;
         this.playFall = false;
         this.gemCount = 0;
+        this.screen = 1;
+        this.furthest = 0;
     }
 
     create() {
@@ -181,6 +183,10 @@ class Platformer extends Phaser.Scene {
 
         this.t.text.gemsCollected = this.add.text(765, 15, "Gems Collected: " + this.gemCount + "/" + 3);
         this.t.text.gemsCollected.setScale(1.3);
+
+        this.t.text.hint1 = this.add.text(1800, 150, "Tip: Move right and \nkeep holding right \nafter grappling!");
+        this.t.text.hint2 = this.add.text(3000, 800, "Tip: Jump then grapple!");
+        
         
 
         my.vfx.dashing = this.add.particles(0, 0, "tilemap_sheet", {
@@ -218,8 +224,15 @@ class Platformer extends Phaser.Scene {
         this.t.text.gemsCollected.setText("Gems Collected: " + this.gemCount + "/" + 3);
         if(my.sprite.player.x <= 1760)
         {
-            this.checkpointX = 40;
-            this.checkpointY = 816;
+            this.screen = 1;
+            if(this.screen > this.furthest)
+            {
+                this.checkpointX = 70;
+                this.checkpointY = 816;
+                this.furthest = this.screen;
+            }
+            this.cameraPointX = 40;
+            this.cameraPointY = 816;
             this.cameras.main.pan(0, 0, 1000, 'Power2');
             this.checkpointX += 30;
             this.t.text.lose.x = 400;
@@ -229,37 +242,39 @@ class Platformer extends Phaser.Scene {
         }
         if(my.sprite.player.x > 1760 && my.sprite.player.x < 3520)
         {
-            this.checkpointX = 1760;
-            this.checkpointY = 240;
-            this.t.text.lose.x = this.checkpointX + 800;
-            this.t.text.restart.x = this.checkpointX + 800;
-            this.t.text.gemsCollected.x = this.checkpointX + 800;
-            this.cameras.main.pan(this.checkpointX+this.checkpointX/2, 0, 1000, 'Power2');
-            this.checkpointX += 30;
+            this.screen = 2;
+            if(this.screen > this.furthest)
+            {
+                this.checkpointX = 1790;
+                this.checkpointY = 240;
+                this.furthest = this.screen;
+            }
+            this.cameraPointX = 1760;
+            this.cameraPointY = 240;
+            this.t.text.lose.x = this.cameraPointX + 800;
+            this.t.text.restart.x = this.cameraPointX + 800;
+            this.t.text.gemsCollected.x = this.cameraPointX + 800;
+            this.cameras.main.pan(this.cameraPointX+this.cameraPointX/2, 0, 1000, 'Power2');
+            
             
         }
         if(my.sprite.player.x > 3520)
         {
-            this.checkpointX = 3520;
-            this.checkpointY = 528;
-            this.t.text.lose.x = this.checkpointX + 900;
-            this.t.text.restart.x = this.checkpointX + 900;
-            this.t.text.lose.y = this.checkpointY-100;
-            this.t.text.restart.y = this.checkpointY-100+50;
-            this.t.text.gemsCollected.x = this.checkpointX + 700;
-            this.cameras.main.pan(this.checkpointX+this.checkpointX/2, 0, 1000, 'Power2');
-            this.checkpointX += 30;
-            
-        }
-
-        if(my.sprite.player.x <= 5110  && my.sprite.player.x > 5101 && my.sprite.player.y == 624) // Win door
-        {
-            this.t.text.win.visible = true;
-            this.t.text.k.visible = false;
-            my.sprite.player.body.setVelocityX(0);
-            my.sprite.player.body.setVelocityY(0);
-            my.sprite.player.body.setAccelerationX(0);
-            this.grappleCooldown = true;
+            this.screen = 3;
+            if(this.screen > this.furthest)
+            {
+                this.checkpointX = 3550;
+                this.checkpointY = 528;
+                this.furthest = this.screen;
+            }
+            this.cameraPointX = 3520;
+            this.cameraPointY = 528;
+            this.t.text.lose.x = this.cameraPointX + 900;
+            this.t.text.restart.x = this.cameraPointX + 900;
+            this.t.text.lose.y = this.cameraPointY-100;
+            this.t.text.restart.y = this.cameraPointY-100+50;
+            this.t.text.gemsCollected.x = this.cameraPointX + 700;
+            this.cameras.main.pan(this.cameraPointX+this.cameraPointX/2, 0, 1000, 'Power2');
         }
 
         //console.log(my.sprite.player.x, my.sprite.player.y);
@@ -304,12 +319,6 @@ class Platformer extends Phaser.Scene {
             my.sprite.player.body.setAccelerationX(0);
             this.gameEnd = false;
         }
-
-        // Camera
-        // this.cameras.main.setBounds(0, 0, this.worldX, this.worldY);
-        // this.cameras.main.startFollow(my.sprite.player, true, 0.25, 0.25); // (target, [,roundPixels][,lerpX][,lerpY])
-        // this.cameras.main.setDeadzone(50, 50);
-        // this.cameras.main.setZoom(this.SCALE);
 
         // Grapple
         let closestCoords = [0, 0];
@@ -379,8 +388,19 @@ class Platformer extends Phaser.Scene {
         {
             my.vfx.dashing.stop();
         }
+        
+        // Win
+        if(my.sprite.player.x <= 5110  && my.sprite.player.x > 5101 && my.sprite.player.y == 624) // Win door
+        {
+            this.t.text.win.visible = true;
+            this.t.text.k.visible = true;
+            my.sprite.player.body.setVelocityX(0);
+            my.sprite.player.body.setVelocityY(0);
+            my.sprite.player.body.setAccelerationX(0);
+            this.grappleCooldown = true;
+        }
         // Movement 
-        if(this.a.isDown || cursors.left.isDown) 
+        else if(this.a.isDown || cursors.left.isDown) 
         {
             // the player accelerates to the left.
             if(!this.goingLeft && (my.sprite.player.body.blocked.down || this.flying))
@@ -461,8 +481,8 @@ class Platformer extends Phaser.Scene {
 
         if(this.m.isDown)
         {
-            my.sprite.player.x = 4144;
-            my.sprite.player.y = 318;
+            my.sprite.player.x = 1800;
+            my.sprite.player.y = 100;
         }
         
     }
