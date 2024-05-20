@@ -18,7 +18,13 @@ class Load extends Phaser.Scene {
             frameWidth: 16,
             frameHeight: 16
         });
-    }
+
+        // Load sounds
+        this.load.audio('jumpFX', 'jump_01.wav');
+        this.load.audio('collectFX', 'impactGlass_heavy_000.mp3');
+        this.load.audio('grappleFX', 'qubodupImpactWood.ogg');
+        this.load.audio('fallFX', 'impactPlate_light_003.ogg');
+}
 
     create() {
         this.anims.create({
