@@ -234,7 +234,6 @@ class Platformer extends Phaser.Scene {
             this.cameraPointX = 40;
             this.cameraPointY = 816;
             this.cameras.main.pan(0, 0, 1000, 'Power2');
-            this.checkpointX += 30;
             this.t.text.lose.x = 400;
             this.t.text.restart.x = 400;
             this.t.text.gemsCollected.x = 765;
@@ -318,6 +317,9 @@ class Platformer extends Phaser.Scene {
             my.sprite.player.body.setVelocityY(0);
             my.sprite.player.body.setAccelerationX(0);
             this.gameEnd = false;
+
+            this.t.text.win.visible = false;
+            this.t.text.k.visible = false;
         }
 
         // Grapple
@@ -472,7 +474,7 @@ class Platformer extends Phaser.Scene {
         if(!my.sprite.player.body.blocked.down) {
             my.sprite.player.anims.play('jump');
         }
-        if(my.sprite.player.body.blocked.down && (Phaser.Input.Keyboard.JustDown(cursors.up) || Phaser.Input.Keyboard.JustDown(this.w))) {
+        if(!this.gameEnd && my.sprite.player.body.blocked.down && (Phaser.Input.Keyboard.JustDown(cursors.up) || Phaser.Input.Keyboard.JustDown(this.w))) {
             // TODO: set a Y velocity to have the player "jump" upwards (negative Y direction)
             my.sprite.player.body.setVelocityY(this.JUMP_VELOCITY);
             this.jumpSound.play();
