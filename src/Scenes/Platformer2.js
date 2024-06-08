@@ -1,6 +1,6 @@
-class Platformer extends Phaser.Scene {
+class Platformer2 extends Phaser.Scene {
     constructor() {
-        super("platformerScene");
+        super("Platformer2Scene");
         this.t = {text: {}};
     }
 
@@ -49,7 +49,8 @@ class Platformer extends Phaser.Scene {
     create() {
         // Create a new tilemap game object which uses 16x16 pixel tiles, and is
         // 165 tiles wide and 30 tiles tall.
-        this.map = this.add.tilemap("level1", 16, 16, 165, 30);
+        //this.map = this.add.tilemap("level1", 16, 16, 165, 30);
+        this.map = this.add.tilemap("level2", 16, 16, 165, 30);
         this.physics.world.setBounds(0, 0, this.worldX, this.worldY+40);
         this.cameras.main.setBounds(0, 0, this.worldX, this.worldY);
 
@@ -103,7 +104,7 @@ class Platformer extends Phaser.Scene {
         }
 
         // set up player avatar 40, 750, 1800, 240,
-        my.sprite.player = this.physics.add.sprite(40, 750, "platformer_characters", "tile_0281.png").setScale(SCALE);
+        my.sprite.player = this.physics.add.sprite(40, 750-100, "platformer_characters", "tile_0281.png").setScale(SCALE);
         my.sprite.player.setCollideWorldBounds(true);
         
         // Collectible objects
@@ -214,16 +215,11 @@ class Platformer extends Phaser.Scene {
         this.physics.world.overlapTiles(my.sprite.player, this.springTiles, this.hitSpring, null, this);
 
         // Text
-        this.t.text.title = this.add.text(400, 200, "UMBRA", {
-            fontSize: 25
+        this.t.text.title = this.add.text(50, 200, "Level 2", {
+            fontSize: 20
         });
         this.t.text.title.setScale(4);
         this.t.text.title.visible = true;
-        this.t.text.controls = this.add.text(400, 300, "WASD or arrow keys to move\nHold space for grapple hook\nR to restart at checkpoint", {
-            fontSize: 15
-        });
-        this.t.text.controls.setScale(1.5);
-        this.t.text.controls.visible = true;
 
         this.t.text.lose = this.add.text(400, 250, "YOU FAILED");
         this.t.text.lose.setDepth(1);
@@ -243,12 +239,10 @@ class Platformer extends Phaser.Scene {
         this.t.text.k.visible = false;
         this.t.text.k.setDepth(1);
 
-        this.t.text.gemsCollected = this.add.text(765, 15, "Gems Collected: " + this.gemCount + "/" + 3);
+        this.t.text.gemsCollected = this.add.text(765, 7, "Gems Collected: " + this.gemCount + "/" + 3);
         this.t.text.gemsCollected.setScale(1.3);
 
-        this.t.text.hint1 = this.add.text(1350, 160, "Tip: Hold down space! \nRelease when the line is white!");
-        this.t.text.hint2 = this.add.text(1800, 150, "Tip: Move right and \nkeep holding right \nafter grappling!");
-        this.t.text.hint3 = this.add.text(3000, 800, "Tip: Jump then grapple!");
+        //this.t.text.hint1 = this.add.text(1350, 160, "Tip: Hold down space! \nRelease when the line is white!");
         
         
         this.anims.create({
@@ -297,7 +291,7 @@ class Platformer extends Phaser.Scene {
             if(this.screen > this.furthest)
             {
                 this.checkpointX = 70;
-                this.checkpointY = 816;
+                this.checkpointY = 600;
                 this.furthest = this.screen;
             }
             this.cameraPointX = 40;
@@ -314,7 +308,7 @@ class Platformer extends Phaser.Scene {
             if(this.screen > this.furthest)
             {
                 this.checkpointX = 1790;
-                this.checkpointY = 240;
+                this.checkpointY = 850;
                 this.furthest = this.screen;
             }
             this.cameraPointX = 1760;
@@ -461,11 +455,11 @@ class Platformer extends Phaser.Scene {
             
         }
         if(my.sprite.player.body.blocked.down || Math.abs(this.springVX) > 0 || Math.abs(this.springVY) > 0)
-            {
-                this.grappleCooldown = false;
-                this.flying = false;
-                my.sprite.player.alpha = 1;
-            }
+        {
+            this.grappleCooldown = false;
+            this.flying = false;
+            my.sprite.player.alpha = 1;
+        }
         if(!this.flying)
         {
             my.vfx.dashing.stop();
@@ -499,7 +493,6 @@ class Platformer extends Phaser.Scene {
             my.sprite.player.body.setVelocityY(0);
             my.sprite.player.body.setAccelerationX(0);
             this.grappleCooldown = true;
-            this.scene.start('Platformer2Scene');
         }
 
         // Movement 
@@ -508,7 +501,7 @@ class Platformer extends Phaser.Scene {
             if(my.sprite.player.body.blocked.down && my.sprite.player.body.velocity.x > 0 && (this.a.isDown || cursors.left.isDown)) // going left but right key down
             {
                 my.sprite.player.body.setVelocityX(0);
-            }            
+            }
             if(!this.goingLeft && (my.sprite.player.body.blocked.down || this.flying))
             {
                 if(my.sprite.player.body.blocked.down)
@@ -621,9 +614,11 @@ class Platformer extends Phaser.Scene {
         }
 
         if(this.m.isDown)
-        {
-            my.sprite.player.x = 5102;
-            my.sprite.player.y = 528;
+        {   
+            let px = 142;
+            let py = 8;
+            my.sprite.player.x = px * 32;
+            my.sprite.player.y = py * 32;
         }
         
     }
