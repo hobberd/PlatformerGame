@@ -235,13 +235,13 @@ class Platformer2 extends Phaser.Scene {
         this.t.text.restart.visible = false;
         this.t.text.restart.setDepth(1);
         
-        this.t.text.win = this.add.text(4750, 200, "YOU WIN!", {
+        this.t.text.win = this.add.text(4700, 100, "YOU WIN!", {
             fontSize: 30
         });
         this.t.text.win.setDepth(1);
         this.t.text.win.setScale(3);
         this.t.text.win.visible = false;
-        this.t.text.k = this.add.text(4750, 300, "Press k to restart from the beginning");
+        this.t.text.k = this.add.text(4700, 200, "Press k to restart from the beginning");
         this.t.text.k.visible = false;
         this.t.text.k.setDepth(1);
 
@@ -303,8 +303,12 @@ class Platformer2 extends Phaser.Scene {
             this.cameraPointX = 40;
             this.cameraPointY = 816;
             this.cameras.main.pan(0, 0, 1000, 'Power2');
-            this.t.text.lose.x = 400;
-            this.t.text.restart.x = 400;
+            let textPosX = 800;
+            let textPosY = 400;
+            this.t.text.lose.x = textPosX;
+            this.t.text.restart.x = textPosX;
+            this.t.text.lose.y = textPosY;
+            this.t.text.restart.y = textPosY+50;
             this.t.text.gemsCollected.x = 765;
 
         }
@@ -319,8 +323,9 @@ class Platformer2 extends Phaser.Scene {
             }
             this.cameraPointX = 1760;
             this.cameraPointY = 240;
-            this.t.text.lose.x = this.cameraPointX + 800;
-            this.t.text.restart.x = this.cameraPointX + 800;
+            let textPosX = this.cameraPointX + 500;
+            this.t.text.lose.x = textPosX;
+            this.t.text.restart.x = textPosX+50;
             this.t.text.gemsCollected.x = this.cameraPointX + 800;
             this.cameras.main.pan(this.cameraPointX+this.cameraPointX/2, 0, 1000, 'Power2');
             
@@ -337,10 +342,12 @@ class Platformer2 extends Phaser.Scene {
             }
             this.cameraPointX = 3520;
             this.cameraPointY = 528;
-            this.t.text.lose.x = this.cameraPointX + 900;
-            this.t.text.restart.x = this.cameraPointX + 900;
-            this.t.text.lose.y = this.cameraPointY-100;
-            this.t.text.restart.y = this.cameraPointY-100+50;
+            let textPosX = this.cameraPointX + 600;
+            let textPosY = 300;
+            this.t.text.lose.x = textPosX;
+            this.t.text.restart.x = textPosX;
+            this.t.text.lose.y = textPosY;
+            this.t.text.restart.y = textPosY+50;
             this.t.text.gemsCollected.x = this.cameraPointX + 700;
             this.cameras.main.pan(this.cameraPointX+this.cameraPointX/2, 0, 1000, 'Power2');
         }
