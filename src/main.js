@@ -19,6 +19,7 @@ let config = {
     render: {
         pixelArt: true  // prevent pixel art from getting blurred when scaled
     },
+    fps:30,
     physics: {
         default: 'arcade',
         arcade: {
