@@ -602,7 +602,7 @@ class Platformer extends Phaser.Scene {
         // coyote time
         if(my.sprite.player.body.blocked.down)
         {
-            this.coyoteTime = 15;
+            this.coyoteTime = 5;
         }
         else if(this.coyoteTime > 0)
         {
