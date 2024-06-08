@@ -78,6 +78,10 @@ class Platformer2 extends Phaser.Scene {
             volume: 0.5,
             loop: false
         });
+        this.springSound = this.sound.add('springFX', {
+            volume: 0.5,
+            loop: false
+        });
 
         // Create layers
         this.platformLayer = this.map.createLayer("Platforms", this.tileset, 0, 0);
@@ -161,8 +165,10 @@ class Platformer2 extends Phaser.Scene {
             {
                 //console.log(obj2.data.list.facing);
                 obj2.play("springAnim");
+                this.springSound.play();
+
                 //my.sprite.player.y -= 5;
-                this.springCooldown = 2;
+                this.springCooldown = 3;
                 // Perform actions based on the facing direction
                 if(obj2.data.list.facing == 'up')
                     this.springVY = this.JUMP_VELOCITY*1.2;
@@ -280,7 +286,7 @@ class Platformer2 extends Phaser.Scene {
         // Restart game
         if(this.k.isDown)
         {
-            this.scene.restart();
+            this.scene.start('platformerScene');
         }
 
         // Screens and checkpoints
@@ -326,7 +332,7 @@ class Platformer2 extends Phaser.Scene {
             if(this.screen > this.furthest)
             {
                 this.checkpointX = 3550;
-                this.checkpointY = 528;
+                this.checkpointY = 855;
                 this.furthest = this.screen;
             }
             this.cameraPointX = 3520;
@@ -469,7 +475,6 @@ class Platformer2 extends Phaser.Scene {
         if(this.springCooldown > 0)
         {
             this.springCooldown--;
-            //console.log(this.springCooldown);
         }
         if(Math.abs(this.springVX) > 0)
         {
@@ -478,14 +483,15 @@ class Platformer2 extends Phaser.Scene {
         }
         if(Math.abs(this.springVY) > 0)
         {
-            //console.log(this.springVY);
             my.sprite.player.body.setVelocityY(this.springVY);
             this.springVY = 0;
         }
         
+        //console.log(my.sprite.player.x);
+        //console.log(my.sprite.player.y);
 
         // Win
-        if(my.sprite.player.x <= 5110  && my.sprite.player.x > 5101 && my.sprite.player.y == 624) // Win door
+        if(my.sprite.player.x <= 5220  && my.sprite.player.x > 5190 && my.sprite.player.y == 880) // Win door
         {
             this.t.text.win.visible = true;
             this.t.text.k.visible = true;

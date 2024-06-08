@@ -493,8 +493,8 @@ class Platformer extends Phaser.Scene {
         // Win
         if(my.sprite.player.x <= 5110  && my.sprite.player.x > 5101 && my.sprite.player.y == 624) // Win door
         {
-            this.t.text.win.visible = true;
-            this.t.text.k.visible = true;
+            //this.t.text.win.visible = true;
+            //this.t.text.k.visible = true;
             my.sprite.player.body.setVelocityX(0);
             my.sprite.player.body.setVelocityY(0);
             my.sprite.player.body.setAccelerationX(0);

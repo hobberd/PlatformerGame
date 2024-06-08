@@ -25,6 +25,7 @@ class Load extends Phaser.Scene {
         this.load.audio('collectFX', 'impactGlass_heavy_000.mp3');
         this.load.audio('grappleFX', 'qubodupImpactWood.ogg');
         this.load.audio('fallFX', 'impactPlate_light_003.ogg');
+        this.load.audio('springFX', 'qubodupImpactMetal.ogg');
 }
 
     create() {
